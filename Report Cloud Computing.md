@@ -1019,6 +1019,7 @@ Below are the performance values for the 13 tests of the HPCC suite.
 | Single STREAM Copy GB/s       | 31.95  |
 | Star STREAM Triad GB/s        | 21.89  |
 | Single STREAM Triad GB/s      | 21.89  |
+
 We compare them to average results for both a Desktop computer and a high-end cluster.
 
 | **Category**     | ** Performance**        | **Expected for High-End CPU Workstation** | **Expected for GPU/HPC Cluster** |
@@ -1029,6 +1030,7 @@ We compare them to average results for both a Desktop computer and a high-end cl
 | **RandomAccess** | **0.022 - 0.104 GUPs**  | **0.05 - 0.2 GUPs**                       | **0.5 - 1.0 GUPs**               |
 | **FFT**          | **3.078 - 5.49 GFlops** | **5-20 GFlops**                           | **10-100+ GFlops**               |
 | **STREAM Copy**  | **31.95 GB/s**          | **30-100 GB/s**                           | **100-500+ GB/s (GPU)**          |
+
 A few observations can be made:
 - Our measurements definitely still belong to those expected from a high-end workstation, not a cluster, even if the structure mimicks one.
 - in particular, memory latency (RandomAccesss) registers particularly low performance. This is probably due to the fact that the host system itself isn't that performing in terms of memory and during the tests often struggled to keep up with the operations, freezing more often than not.
@@ -1065,6 +1067,7 @@ With the package `iperf3`, we test our network performance by having our nodes c
 | Node01 | Download  | 1.33-1,48 Gbits/sec |
 | Node02 | Upload    | 1,38-1,44 Gbits/sec |
 | Node02 | Download  | 1,38-1,44 Gbits/sec |
+
 The network seems stable, with minor fluctuations in both upload and download speeds for both nodes
 #### Disk IO
 Thanks to some options in IOzone that let us output plottable data, we can visualize the test performance for different metrics.
@@ -1114,6 +1117,7 @@ Below are the performance values for the 13 tests of the HPCC suite.
 | **RandomAccess** | **0.022 - 0.104 GUPs**   | **0.05 - 0.2 GUPs**                       | **0.5 - 1.0 GUPs**               |
 | **FFT**          | **4.385 - 5.479 GFlops** | **5-20 GFlops**                           | **10-100+ GFlops**               |
 | **STREAM Copy**  | **32.35 GB/s**           | **30-100 GB/s**                           | **100-500+ GB/s (GPU)**          |
+
 The container performance in the HPCC test aligns, once again, with that of a low end workstation, very far from cluster performance. 
 #### STRESS-NG TESTS
 
@@ -1131,6 +1135,7 @@ As before, we perform a memory and cpu test.
 | --------------------- | -------------- | ----------------- |
 | Cpu Events per Second | 533-535        | 800-1.200         |
 | Memory write speed    | ~8,563 MiB/s   | 5000-8000 MiB/sec |
+
 We can immediately see that, while the cluster underperforms with respect to CPU (probably due to Docker's inherent overhead), it achieves an overall satisfactory performance in Memory write speed.
 
 #### NETWORK
@@ -1142,22 +1147,23 @@ With the package `iperf3`, we test our network performance by having our nodes c
 | worker1 | Download  | 41.5-51.7 Gbits/sec |
 | worker2 | Upload    | 45.9-46,6 Gbits/sec |
 | worker2 | Download  | 44.8-47.6 Gbits/sec |
+
 The network seems stable, with minor fluctuations in both upload and download speeds for both nodes
 
 #### DISK IO
 Similarly to VMs, we leverage IOzone's features to graph the test output.
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;"> 
-<img src="container_plots/Writer_report_2_plot.png" width="100%"> 
-<img src="container_plots/Re-writer_report_2_plot.png" width="100%"> 
-<img src="container_plots/Reader_report_2_plot.png" width="100%"> 
-<img src="container_plots/Random_read_report_2_plot.png" width="100%">
-<img src="container_plots/Random_write_report_2_plot.png" width="100%"> 
-<img src="container_plots/Backward_read_report_2_plot.png" width="100%">
-<img src="container_plots/Stride_read_report_2_plot.png" width="100%"> 
-<img src="container_plots/Re-Reader_report_2_plot.png" width="100%">
-<img src="container_plots/Re-Fwrite_report_2_plot.png" width="100%">
-<img src="container_plots/Fwrite_report_2_plot.png" width="100%">
-<img src="container_plots/Fread_report_2_plot.png" width="100%"> 
+<img src="container_plots/Writer_report_2_plot.png" width="50%"> 
+<img src="container_plots/Re-writer_report_2_plot.png" width="50%"> 
+<img src="container_plots/Reader_report_2_plot.png" width="50%"> 
+<img src="container_plots/Random_read_report_2_plot.png" width="50%">
+<img src="container_plots/Random_write_report_2_plot.png" width="50%"> 
+<img src="container_plots/Backward_read_report_2_plot.png" width="50%">
+<img src="container_plots/Stride_read_report_2_plot.png" width="50%"> 
+<img src="container_plots/Re-Reader_report_2_plot.png" width="50%">
+<img src="container_plots/Re-Fwrite_report_2_plot.png" width="50%">
+<img src="container_plots/Fwrite_report_2_plot.png" width="50%">
+<img src="container_plots/Fread_report_2_plot.png" width="50%"> 
 </div>
 
 The findings are different this time: we get peak performance across all file sizes, as long as the record length is relatively small, in all operations. 
