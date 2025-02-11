@@ -1068,17 +1068,17 @@ The network seems stable, with minor fluctuations in both upload and download sp
 #### Disk IO
 Thanks to some options in IOzone that let us output plottable data, we can visualize the test performance for different metrics.
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;"> 
-<img src="writer_report_plot.png" width="100%"> 
-<img src="re-writer_report_plot.png" width="100%"> 
-<img src="reader_report_plot.png" width="100%"> 
-<img src="re-reader_report_plot.png" width="100%">
-<img src="random_read_report_plot.png" width="100%">
-<img src="random_write_report_plot.png" width="100%"> 
-<img src="backward_read_report_plot.png" width="100%">
-<img src="stride_read_report_plot.png" width="100%"> 
-<img src="fwrite_report_plot.png" width="100%">
-<img src="re-Fwrite_report_plot.png" width="100%">
-<img src="fread_report_plot.png" width="100%"> 
+<img src="vm_plots/writer_report_plot.png" width="100%"> 
+<img src="vm_plots/re-writer_report_plot.png" width="100%"> 
+<img src="vm_plots/reader_report_plot.png" width="100%"> 
+<img src="vm_plots/re-reader_report_plot.png" width="100%">
+<img src="vm_plots/random_read_report_plot.png" width="100%">
+<img src="vm_plots/random_write_report_plot.png" width="100%"> 
+<img src="vm_plots/backward_read_report_plot.png" width="100%">
+<img src="vm_plots/stride_read_report_plot.png" width="100%"> 
+<img src="vm_plots/fwrite_report_plot.png" width="100%">
+<img src="vm_plots/re-Fwrite_report_plot.png" width="100%">
+<img src="vm_plots/fread_report_plot.png" width="100%"> 
 </div>
 
 In general, we see that for most operations, as we increase the record size, performance degrades. This is also the case if along with it we increase file size. 
