@@ -1071,19 +1071,33 @@ With the package `iperf3`, we test our network performance by having our nodes c
 The network seems stable, with minor fluctuations in both upload and download speeds for both nodes
 #### Disk IO
 Thanks to some options in IOzone that let us output plottable data, we can visualize the test performance for different metrics.
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;"> 
-<img src="vm_plots/writer_report_plot.png" width="100%"> 
-<img src="vm_plots/Re-writer_report_plot.png" width="100%"> 
-<img src="vm_plots/Reader_report_plot.png" width="100%"> 
-<img src="vm_plots/Re-Reader_report_plot.png" width="100%">
-<img src="vm_plots/Random_read_report_plot.png" width="100%">
-<img src="vm_plots/Random_write_report_plot.png" width="100%"> 
-<img src="vm_plots/Backward_read_report_plot.png" width="100%">
-<img src="vm_plots/Stride_read_report_plot.png" width="100%"> 
-<img src="vm_plots/Fwrite_report_plot.png" width="100%">
-<img src="vm_plots/Re-Fwrite_report_plot.png" width="100%">
-<img src="vm_plots/Fread_report_plot.png" width="100%"> 
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%;">
+    <img src="vm_plots/writer_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Re-writer_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Reader_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Re-Reader_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Random_read_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Random_write_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Backward_read_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Stride_read_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Fwrite_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Re-Fwrite_report_plot.png" style="width: 100%;">
+    <img src="vm_plots/Fread_report_plot.png" style="width: 100%;">
 </div>
+
+<!-- <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;"> --> 
+<!-- <img src="vm_plots/writer_report_plot.png" width="50%"> --> 
+<!-- <img src="vm_plots/Re-writer_report_plot.png" width="50%"> --> 
+<!-- <img src="vm_plots/Reader_report_plot.png" width="50%"> --> 
+<!-- <img src="vm_plots/Re-Reader_report_plot.png" width="50%"> -->
+<!-- <img src="vm_plots/Random_read_report_plot.png" width="50%"> -->
+<!-- <img src="vm_plots/Random_write_report_plot.png" width="50%"> --> 
+<!-- <img src="vm_plots/Backward_read_report_plot.png" width="50%"> -->
+<!-- <img src="vm_plots/Stride_read_report_plot.png" width="50%"> --> 
+<!-- <img src="vm_plots/Fwrite_report_plot.png" width="50%"> -->
+<!-- <img src="vm_plots/Re-Fwrite_report_plot.png" width="50%"> -->
+<!-- <img src="vm_plots/Fread_report_plot.png" width="50%"> --> 
+<!-- </div> -->
 
 In general, we see that for most operations, as we increase the record size, performance degrades. This is also the case if along with it we increase file size. 
 In particular, write operation seem to suffer a lot from increased file size.
