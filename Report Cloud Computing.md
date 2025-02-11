@@ -1167,17 +1167,17 @@ The network seems stable, with minor fluctuations in both upload and download sp
 #### DISK IO
 Similarly to VMs, we leverage IOzone's features to graph the test output.
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;"> 
-<img src="container_plots/Writer_report_2_plot.png" width="50%"> 
-<img src="container_plots/Re-writer_report_2_plot.png" width="50%"> 
-<img src="container_plots/Reader_report_2_plot.png" width="50%"> 
-<img src="container_plots/Random_read_report_2_plot.png" width="50%">
-<img src="container_plots/Random_write_report_2_plot.png" width="50%"> 
-<img src="container_plots/Backward_read_report_2_plot.png" width="50%">
-<img src="container_plots/Stride_read_report_2_plot.png" width="50%"> 
-<img src="container_plots/Re-Reader_report_2_plot.png" width="50%">
-<img src="container_plots/Re-Fwrite_report_2_plot.png" width="50%">
-<img src="container_plots/Fwrite_report_2_plot.png" width="50%">
-<img src="container_plots/Fread_report_2_plot.png" width="50%"> 
+<img src="container_plots/Writer_report_2_plot.png" width="100%"> 
+<img src="container_plots/Re-writer_report_2_plot.png" width="100%"> 
+<img src="container_plots/Reader_report_2_plot.png" width="100%"> 
+<img src="container_plots/Random_read_report_2_plot.png" width="100%">
+<img src="container_plots/Random_write_report_2_plot.png" width="100%"> 
+<img src="container_plots/Backward_read_report_2_plot.png" width="100%">
+<img src="container_plots/Stride_read_report_2_plot.png" width="100%"> 
+<img src="container_plots/Re-Reader_report_2_plot.png" width="100%">
+<img src="container_plots/Re-Fwrite_report_2_plot.png" width="100%">
+<img src="container_plots/Fwrite_report_2_plot.png" width="100%">
+<img src="container_plots/Fread_report_2_plot.png" width="100%"> 
 </div>
 
 The findings are different this time: we get peak performance across all file sizes, as long as the record length is relatively small, in all operations. 
