@@ -7,7 +7,8 @@ In this tutorial, we are going to create a cluster of Linux virtual machines.
 - We will assign our machines static IP address in the internal network: 192.168.0.1, 192.168.0.2, 192.168.0.3, ..., 192.168.0.XX.
 The cluster structure can be sketched like this:
 
-![[cluster.excalidraw.md]]
+![Cluster_model](cluster.excalidraw.png)
+
 
 Only the master machine is connected to the internet: the others communicate with the master though an internal network, and only through it they are able e.g download packages from the internet.
 
@@ -1071,7 +1072,7 @@ Thanks to some options in IOzone that let us output plottable data, we can visua
 <img src="vm_plots/writer_report_plot.png" width="100%"> 
 <img src="vm_plots/Re-writer_report_plot.png" width="100%"> 
 <img src="vm_plots/Reader_report_plot.png" width="100%"> 
-<img src="vm_plots/Re-reader_report_plot.png" width="100%">
+<img src="vm_plots/Re-Reader_report_plot.png" width="100%">
 <img src="vm_plots/Random_read_report_plot.png" width="100%">
 <img src="vm_plots/Random_write_report_plot.png" width="100%"> 
 <img src="vm_plots/Backward_read_report_plot.png" width="100%">
