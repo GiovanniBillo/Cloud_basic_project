@@ -7,7 +7,7 @@ In this tutorial, we are going to create a cluster of Linux virtual machines.
 - We will assign our machines static IP address in the internal network: 192.168.0.1, 192.168.0.2, 192.168.0.3, ..., 192.168.0.XX.
 The cluster structure can be sketched like this:
 
-![[Excalidraw/cluster.excalidraw]]
+![[cluster.excalidraw.md]]
 
 Only the master machine is connected to the internet: the others communicate with the master though an internal network, and only through it they are able e.g download packages from the internet.
 
