@@ -1,3 +1,8 @@
+<div align="center">
+    <h1>Cloud Computing Basic Report</h1>
+    <h3>Author: Giovanni Billo</h3>
+</div>
+
 ## VBox Cluster
 
 ## Goals
