@@ -1,0 +1,11 @@
+# Ignore backup folder
+_docker_results_backup/
+backup/
+tests_bak/
+docker_part/ssh_keys
+vm_part/
+vm_part/results/cvs/Miniconda3-latest-Linux-x86_64.sh
+# Ignore large ISO files
+*.iso
+
+
