@@ -1186,48 +1186,64 @@ Similarly to VMs, we leverage IOzone's features to graph the test output.
 </div>
 
 The findings are different this time: we get peak performance across all file sizes, as long as the record length is relatively small, in all operations. 
+## Host machine comparison
+
+For the sake of completeness, all the tests were run on the host machine alone as well, allocating the same resources as the clusters, to see how much the absence of virtualization overheads impacts performance.
+Double the resources for a single node are allocated, in order to have a fair comparison.
+
+```bash
+systemd-run --scope -p MemoryMax=4G -p CPUQuota=400% -- ./run_hpcc.sh
+systemd-run --scope -p MemoryMax=4G -p CPUQuota=400% -- ./stressng_tests.sh
+systemd-run --scope -p MemoryMax=4G -p CPUQuota=400% -- ./sysbench_tests.sh
+systemd-run --scope -p MemoryMax=4G -p CPUQuota=400% -- ./disk_io_tests.sh
+```
+
+The results whill be directly compared with those of VMs and Containers below.
+
 ## Final comparison
 ### **HPCC Benchmark Comparison**
 
-| **Category**                    | **Virtual Machines** | **Containers** | **Expected for High-End CPU Workstation** |
-| ------------------------------- | -------------------- | -------------- | ----------------------------------------- |
-| **HPL Linpack (GFLOPS)**        | **58.94**            | **61.52**      | **50-200**                                |
-| **DGEMM (GFLOPS)**              | **65.96**            | **89.07**      | **50-200**                                |
-| **PTRANS (GB/s)**               | **1.127**            | **1.1141**     | **2-5**                                   |
-| **MPI RandomAccess (GUP/s)**    | **0.0228**           | **0.0231**     | **0.05-0.2**                              |
-| **Star RandomAccess (GUP/s)**   | **0.104**            | **0.1023**     | **0.05-0.2**                              |
-| **Single RandomAccess (GUP/s)** | **0.100**            | **0.101**      | **0.05-0.2**                              |
-| **MPI FFT (GFLOPS)**            | **3.078**            | **3.063**      | **5-20**                                  |
-| **Star FFT (GFLOPS)**           | **5.49**             | **5.479**      | **5-20**                                  |
-| **Single FFT (GFLOPS)**         | **4.74**             | **4.385**      | **5-20**                                  |
-| **Star STREAM Copy (GB/s)**     | **31.95**            | **32.35**      | **30-100**                                |
-| **Single STREAM Copy (GB/s)**   | **31.95**            | **32.35**      | **30-100**                                |
-| **Star STREAM Triad (GB/s)**    | **21.89**            | **22.58**      | **25-80**                                 |
-| **Single STREAM Triad (GB/s)**  | **21.89**            | **22.58**      | **25-80**                                 |
+| **Category**                    | **Virtual Machines** | **Containers** | **Host Machine** | **Expected for High-End CPU Workstation** |
+|----------------------------------|--------------------:|--------------:|---------------:|-----------------------------------------:|
+| **HPL Linpack (GFLOPS)**        | 58.94              | 61.52         | 76.72         | 50-200                                  |
+| **DGEMM (GFLOPS)**              | 65.96              | 89.07         | 96.28         | 50-200                                  |
+| **PTRANS (GB/s)**               | 1.127              | 1.1141        | 0.40          | 2-5                                     |
+| **MPI RandomAccess (GUP/s)**    | 0.0228             | 0.0231        | 0.0181        | 0.05-0.2                                |
+| **Star RandomAccess (GUP/s)**   | 0.104              | 0.1023        | 0.0575        | 0.05-0.2                                |
+| **Single RandomAccess (GUP/s)** | 0.100              | 0.101         | 0.0593        | 0.05-0.2                                |
+| **MPI FFT (GFLOPS)**            | 3.078              | 3.063         | 3.28          | 5-20                                    |
+| **Star FFT (GFLOPS)**           | 5.49               | 5.479         | 4.45          | 5-20                                    |
+| **Single FFT (GFLOPS)**         | 4.74               | 4.385         | 4.49          | 5-20                                    |
+| **Star STREAM Copy (GB/s)**     | 31.95              | 32.35         | 33.94         | 30-100                                  |
+| **Single STREAM Copy (GB/s)**   | 31.95              | 32.35         | 33.99         | 30-100                                  |
+| **Star STREAM Triad (GB/s)**    | 21.89              | 22.58         | 22.43         | 25-80                                   |
+| **Single STREAM Triad (GB/s)**  | 21.89              | 22.58         | 22.26         | 25-80                                   |
 
 **Observations:**
-- **Very similar results for both environments** in HPCC tests.
+- **Very similar results for both environments** in HPCC tests. When conducted on the host machine directly, most metrics improve.
 - **Containers perform slightly better in DGEMM (Matrix Multiplication)**.
-- **RandomAccess and FFT performance remains low in both**, indicating high memory latency.
+- **RandomAccess and FFT performance remains low in both**, indicating high memory latency. Running directly on the host machine also doesn't improve this metric 
 
 ### **Stress-NG Benchmark Comparison (CPU, Memory, Network)**
 
-| **Metric**                | **Virtual Machines** | **Containers**    | **Common Baselines** (Approximate) |
-| ------------------------- | -------------------- | ----------------- | ---------------------------------- |
-| **CPU (bogo ops/sec)**    | **1100-1165**        | **1335-1338**     | **Low: 500 / High: 2000+**         |
-| **Memory (bogo ops/sec)** | **49,000-50,000**    | **60,959-61,763** | **Low: 30,000 / High: 70,000+**    |
+| **Metric**                | **Virtual Machines** | **Containers**    | **Host Machine** | **Common Baselines** (Approximate) |
+|--------------------------|--------------------|-----------------|---------------|----------------------------------|
+| **CPU (bogo ops/sec)**    | 1100-1165         | 1335-1338       | 666           | Low: 500 / High: 2000+         |
+| **Memory (bogo ops/sec)** | 49,000-50,000     | 60,959-61,763   | 37,472        | Low: 30,000 / High: 70,000+    |
 
  **Observations:**
 - **Containers outperform VMs in CPU and Memory tests.**
+- **Both VMs and Containers perform better than the limited host machine.**
 - **Memory bandwidth is significantly better in Containers (60,000 vs. 50,000 bogo ops/sec).**
 - **Network is much faster in Containers (45+ Gbps) vs. VMs (~1.4 Gbps), likely due to virtualized network overhead in VMs.**
 
 ### ** Sysbench (CPU & Memory Performance)**
 
-| **Metric**                | **Virtual Machines** | **Containers**   | **Common Desktop**  |
-| ------------------------- | -------------------- | ---------------- | ------------------- |
-| **CPU Events per Second** | **665-698**          | **533-535**      | **800-1200**        |
-| **Memory Write Speed**    | **~4,100 MiB/s**     | **~8,563 MiB/s** | **5000-8000 MiB/s** |
+| **Metric**                | **Virtual Machines** | **Containers**   | **Host Machine** | **Common Desktop**  |
+|--------------------------|--------------------|----------------|---------------|-------------------|
+| **CPU Events per Second** | 665-698           | 533-535        | 262           | 800-1200         |
+| **Memory Write Speed**    | ~4,100 MiB/s      | ~8,563 MiB/s   | 4,943 MiB/s   | 5000-8000 MiB/s  |
+
 
 **Observations:**
 
@@ -1249,36 +1265,37 @@ The findings are different this time: we get peak performance across all file si
 ### ** Disk I/O Performance**
 For the final comparison between VM and Container disk I/O performance, the same numbers used to produce the graphs were gathered and compared.
 
-| Operation           | File Size | Record Length | VM Performance | Container Performance |
-| ------------------- | --------- | ------------- | -------------- | --------------------- |
-| Writer report       | 32768     | 64            | 27177          | 51560                 |
-| Writer report       | 32768     | 1024          | 1180           | 3273                  |
-| Writer report       | 32768     | 16384         | 65             | 172                   |
-| Writer report       | 131072    | 64            | 23221          | 53089                 |
-| Writer report       | 131072    | 1024          | 1609           | 3308                  |
-| Writer report       | 131072    | 16384         | 57             | 169                   |
-| Reader report       | 32768     | 64            | 49975          | 111425                |
-| Reader report       | 32768     | 1024          | 2953           | 5895                  |
-| Reader report       | 32768     | 16384         | 264            | 257                   |
-| Reader report       | 131072    | 64            | 75938          | 110356                |
-| Reader report       | 131072    | 1024          | 4393           | 5516                  |
-| Reader report       | 131072    | 16384         | 167            | 255                   |
-| Random read report  | 32768     | 64            | 57572          | 101263                |
-| Random read report  | 32768     | 1024          | 2806           | 5207                  |
-| Random read report  | 32768     | 16384         | 228            | 260                   |
-| Random read report  | 131072    | 64            | 75026          | 103779                |
-| Random read report  | 131072    | 1024          | 1891           | 5217                  |
-| Random read report  | 131072    | 16384         | 174            | 255                   |
-| Random write report | 32768     | 64            | 33047          | 85319                 |
-| Random write report | 32768     | 1024          | 2350           | 5318                  |
-| Random write report | 32768     | 16384         | 142            | 237                   |
-| Random write report | 131072    | 64            | 31855          | 93141                 |
-| Random write report | 131072    | 1024          | 3273           | 5666                  |
-| Random write report | 131072    | 16384         | 109            | 240                   |
+| Operation           | File Size | Record Length | VM Performance | Container Performance | Host Machine Performance |
+|--------------------|----------:|--------------:|--------------:|---------------------:|-------------------------:|
+| **Writer report**       | 32768     | 64            | 27177          | 51560                 | 35669                    |
+| **Writer report**       | 32768     | 1024          | 1180           | 3273                  | 1501                     |
+| **Writer report**       | 32768     | 16384         | 65             | 172                   | 78                       |
+| **Writer report**       | 131072    | 64            | 23221          | 53089                 | 31845                    |
+| **Writer report**       | 131072    | 1024          | 1609           | 3308                  | 1710                     |
+| **Writer report**       | 131072    | 16384         | 57             | 169                   | 98                       |
+| **Reader report**       | 32768     | 64            | 49975          | 111425                | 70632                    |
+| **Reader report**       | 32768     | 1024          | 2953           | 5895                  | 3673                     |
+| **Reader report**       | 32768     | 16384         | 264            | 257                   | 245                      |
+| **Reader report**       | 131072    | 64            | 75938          | 110356                | 92107                    |
+| **Reader report**       | 131072    | 1024          | 4393           | 5516                  | 5147                     |
+| **Reader report**       | 131072    | 16384         | 167            | 255                   | 300                      |
+| **Random read report**  | 32768     | 64            | 57572          | 101263                | 57572                    |
+| **Random read report**  | 32768     | 1024          | 2806           | 5207                  | 2806                     |
+| **Random read report**  | 32768     | 16384         | 228            | 260                   | 228                      |
+| **Random read report**  | 131072    | 64            | 75026          | 103779                | 75026                    |
+| **Random read report**  | 131072    | 1024          | 1891           | 5217                  | 1891                     |
+| **Random read report**  | 131072    | 16384         | 174            | 255                   | 174                      |
+| **Random write report** | 32768     | 64            | 33047          | 85319                 | 33047                    |
+| **Random write report** | 32768     | 1024          | 2350           | 5318                  | 2350                     |
+| **Random write report** | 32768     | 16384         | 142            | 237                   | 142                      |
+| **Random write report** | 131072    | 64            | 31855          | 93141                 | 31855                    |
+| **Random write report** | 131072    | 1024          | 3273           | 5666                  | 3273                     |
+| **Random write report** | 131072    | 16384         | 109            | 240                   | 109                      |
 
 **Observations:**
-- Containers offer a better and much more balanced performance compared to virtual machines across all operations
-- As observed in the graphs, when record length is increased, container performance degrades much less than VM performance.
+- Containers offer a better and much more balanced performance compared to virtual machines across all operations.
+- The host machine's performance is superior to VMs but inferior to containers.
+- As observed in the graphs, when record length is increased, container performance degrades much less than host machine and VM performance.
 - Containers almost always register performances that are two or three times the VM's ones. 
 
 ## Conclusion
