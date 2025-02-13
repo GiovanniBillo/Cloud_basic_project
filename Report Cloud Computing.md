@@ -6,7 +6,7 @@
 ## VBox Cluster
 
 ## Goals
-In this tutorial, we are going to create a cluster of Linux virtual machines.
+In this report, we are going to create a cluster of Linux virtual machines.
 - Our machines will be named master  node02, node03,..., node0X.
 - The first machine will act as a master node and will have 2vCPUs, 2GB of RAM and 20 GB hard disk. The others will act as workers and will have the same specs
 - We will assign our machines static IP address in the internal network: 192.168.0.1, 192.168.0.2, 192.168.0.3, ..., 192.168.0.XX.
@@ -17,7 +17,7 @@ The cluster structure can be sketched like this:
 
 Only the master machine is connected to the internet: the others communicate with the master though an internal network, and only through it they are able e.g download packages from the internet.
 
-The specs for the host machine are as follows:
+The specs for the host machine are as follows.
 **Hardware**
 - CPU: 13th Gen Intel(R) Core(TM) i3-1315U
 - RAM: 8 GB
@@ -121,9 +121,9 @@ Lets clone the template machine in order to start setting up our cluster.
 - Repeat any number of times to create the worker nodes
 	- in this example, only two nodes, node02 and node04 are created.
 ### Network adapters configuration
-Once it is created, let's configure the two network adapters:
-12. Adapter 1 (NAT): This connects the VM to the host’s network and allows internet access.
-13. Adapter 2 (Internal network): This is used for communication between the VMs on a private internal network, where each VM is assigned a static IP address.
+Once it is created, let's configure the two network adapters.
+- Adapter 1 (NAT): This connects the VM to the host’s network and allows internet access.
+- Adapter 2 (Internal network): This is used for communication between the VMs on a private internal network, where each VM is assigned a static IP address.
 The right configuration depends on the role of the node in the cluster:
 - **master**: right click in the virtual machine  and then **_Settings>Network_**. Check that the first adapter is attached to NAT. Then, on adapter 2 on _Enable Network Adapter_ and attach it to _Internal Network_, then click Then select a name for the network that must be the same for all the nodes (e.g., _clustervimnet_).
 - **workers**: only enable the second adapter for the internal; network. If applicable, repeat the configuration for other nodes.
@@ -189,7 +189,7 @@ ssh -p 2222 user01@127.0.0.1
 ```
 
 ## Network Configuration for Master Node
-The master node will act as the control point for the cluster, managing DNS (domain name system) and DHCP (dynamic host configuration protocol) services.
+The master node will act as the control point for the cluster, managing connections to the internet. 
 
 ### Configure the network file
 You need to configure the second network adapter (Adapter 2) to assign a static IP address. This IP address will allow the master node to communicate with the other worker nodes on the internal network.
@@ -386,10 +386,6 @@ Apply the configuration:
 sudo netplan apply
 ```
 
-Finally, set the DNS server.
-```
-sudo ln -fs /run/systemd/resolve/resolv.conf /etc/resolv.conf
-```
 Now it is time to reboot our VM. 
 
 After rebooting, in order to verify that the network works, run:
@@ -495,7 +491,7 @@ sudo vim /etc/hosts
 Once the machine is rebooted, it will be able to connect to the internet or other nodes and access the shared file system.
 
 ## Installing the packages
-Before testing, we need to install some necessary packages. While some can simply be fetched, other require a non-trivial setup
+Before testing, we need to install some necessary packages. While some can simply be fetched, other require a non-trivial setup.
 ### HPCC
 The HPCC benchmark is a series of tests that measure the performance of a computer cluster with a host of different operations. Below is a quick summary of each:
 - **HPL (High-Performance Linpack) Gflops**
@@ -530,9 +526,13 @@ The HPCC benchmark is a series of tests that measure the performance of a comput
     - Evaluates memory bandwidth and computational performance by performing a specific vector operation (`a = b + scalar * c`).
 - **Single STREAM Triad GB/s**
     - The same as Star STREAM Triad, but limited to a single node.
+A quick note on the units of measurement used:
+- GFLOPS (Giga Floating Point Operations Per Second): Measures the computational power of a processor in floating-point operations per second. Indicates how many billion (Giga) floating-point calculations a system can perform in one second.
+- GUPs (Giga Updates Per Second): measures the update rate of memory or data structures, particularly in irregular workloads like sparse matrix computations, graph processing, and databases. Indicates how many billion (Giga) updates can be performed per second.
+- GB/s (Gigabytes Per Second): Measures memory bandwidth, representing how fast data can be transferred between memory and processors. Indicates how many billion (Giga) bytes of data can be read/written per second.
 
 
-The installationprocedure for the HPCC module is convoluted to say the least. 
+The installation procedure for the HPCC module is convoluted to say the least. 
 It is dependent on the Intel MKL library, which needs then to be installed first on all nodes.
 Add Intel's GPG key
 ```bash
@@ -569,7 +569,7 @@ make arch=LinuxIntelIA64Itan2 eccMKL
 ```
 Depending on the machine and the environment, various errors could appear.
 Thanks to [Carlos](https://github.com/carlos-vf/Cluster-Creation-and-Testing-with-VirtualBox-VMs-and-Docker-Containers/blob/main/Cluster%20Creation%20and%20Performance%20Testing%20in%20VirtualBox.md) for discovering these and contributing with a solution. 
-Modify the Makefile for the corresponding variables
+Modify the corresponding variables in the Makefile. 
 ```Makefile
 LAlib = -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 ...
@@ -610,7 +610,7 @@ It is desirable to partially automate testing in order to seamlessly compare the
 mkdir -p /shared/results
 chmod 777 /shared/results
 ```
-various test scripts were created. 
+Various test scripts were created. 
 
 **run_hpcc.sh**
 - executes the hpcc performance benchmark
@@ -633,7 +633,7 @@ echo "✅ HPCC Benchmark completed! Results saved in $RESULT_FILE"
 **sysbench_tests.sh**
 - Conducts a distributed CPU performance test across multiple nodes.
 - Uses `sysbench` to stress the CPU with prime number calculations.    
-- Executes via `mpirun`, running the test on specified nodes (`192.168.0.1`, `192.168.0.2`, `192.168.0.4`).
+- Executes via `mpirun`, running the test on specified nodes (`192.168.0.2`, `192.168.0.4`).
 ```bash 
 #!/bin/bash
 
@@ -710,7 +710,7 @@ mpirun --host 192.168.0.1,192.168.0.2,192.168.0.4 -np 2 iozone -s 56M -r 1k -n $
 echo "✅ Distributed Disk I/O test completed! Results saved in $RESULT_FILE"
 
 ```
-The output is large: it's a table with various columns.
+The output is a large table with various columns.
 - **kB** – The total file size used in the test, measured in kilobytes.
 - **reclen** – The record length, indicating the size of each block used for reading or writing.
 - **write** – The speed of sequential writing, measured in kilobytes per second (KB/s).
@@ -725,8 +725,9 @@ The output is large: it's a table with various columns.
 - **fread** – The speed of reading with `fread()`.
 - **freread** – The speed of re-reading with `fread()`.
 
-The rows are varying combinations of file sizes and record lengths. For example, having a file of size e.g 128 kb, we track the speed of all operations performed with in in blocks of 4 kb, then 8, 16 ... and so on until the block size is equal to the file size. 
-We limit the output to a specific range in order to have complete data  (otherwise after a certain threshold, smaller record sizes would be skipped when the file was too large):
+The rows are varying combinations of file sizes and record lengths. For example, having a file of size e.g 128 kb, we track the speed of all operations performed with in blocks of 4 kb, then 8, 16 ... and so on until the block size is equal to the file size.
+We track the performance of all these different operations, measured in kilobytes per second (KB/s).  
+We limit the output to a specific range in order to have complete data  (otherwise after a certain threshold, smaller record sizes would be skipped, as the file would be too large):
 - minimum record length (option `-y`): 64 kb
 - minimum file size (option `-g`): 32728
 Then, the file size is increased, until 524288 kb by default. 
@@ -845,10 +846,6 @@ RUN chmod 600 /home/user/.ssh/id_rsa /home/user/.ssh/authorized_keys \
 
 # ✅ Expose SSH port
 EXPOSE 22
-
-# ✅ Allow MPI to run without root restrictions
-ENV OMPI_ALLOW_RUN_AS_ROOT=1
-ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
 # ✅ Switch to user
 USER user
@@ -1038,10 +1035,10 @@ We compare them to average results for both a Desktop computer and a high-end cl
 
 A few observations can be made:
 - Our measurements definitely still belong to those expected from a high-end workstation, not a cluster, even if the structure mimicks one.
-- in particular, memory latency (RandomAccesss) registers particularly low performance. This is probably due to the fact that the host system itself isn't that performing in terms of memory and during the tests often struggled to keep up with the operations, freezing more often than not.
+- in particular, memory latency (RandomAccesss) registers particularly low performance. This is probably due to the fact that the host system itself isn't that performing in terms of memory and during the tests often struggled to keep up with the operations, freezing frequently.
 #### STRESS-NG TESTS
 With the `stress-ng` suite, we test once again the CPU, memory and disk performance. 
-The test measures how many "bogus operations" (number of operations) performed by a component within a certain amount of time. 
+The test measures how many "bogus operations" (number of operations) are performed by a component within a certain amount of time. 
 This metric is different from GFLOPS and, while it doesn't provide a realistic and useful cross-machine benchmarking metric, it's still useful to measure how many operations the component can handle under stress. 
 
 | **Metric**                | **Your System**  | **Common Baselines** (Approximate)                   |
@@ -1061,6 +1058,7 @@ CPU and memory are further tested with `sysbench`, which provides a different ty
 | --------------------- | ------------ | ----------------- |
 | Cpu Events per Second | 665-698      | 800-1.200         |
 | Memory write speed    | ~4,100 MiB/s | 5000-8000 MiB/sec |
+
 It must be noted that latency was generally low for both CPU and Memory, meaning computations are done rather quickly.
 
 #### NETWORK
@@ -1105,12 +1103,12 @@ Thanks to some options in IOzone that let us output plottable data, we can visua
 <!-- </div> -->
 
 In general, we see that for most operations, as we increase the record size, performance degrades. This is also the case if along with it we increase file size. 
-In particular, write operation seem to suffer a lot from increased file size.
+In particular, write operations seem to suffer a lot from increased file size.
 
 It's therefore probably better to write many smaller chunks than to write larger ones, as they are more cumbersome to manage. 
 ### Containers
 #### HPCC
-Below are the performance values for the 13 tests of the HPCC suite. 
+Below are the performance values for the 13 tests of the HPCC suite for containers. 
 
 | Test                     | Value  |
 | ------------------------ | ------ |
@@ -1145,6 +1143,7 @@ The container performance in the HPCC test aligns, once again, with that of a lo
 | **CPU (bogo ops/sec)**    | 1335-1338           | Low: 500 (older CPUs) / High: 2,000+ (high-end CPUs) |
 | **Memory (bogo ops/sec)** | 60.959 - 61, 763    | Low: 30,000 (older DDR4) / High: 70,000+ (DDR5)      |
 | **Disk (bogo ops/sec)**   | 1,011,480-1,019,107 | HDD: 200,000-400,000 / SSD: 1,000,000+               |
+
 The performance of containers is surprising here: they are above the average when compared to older CPUs, and get sometimes even close to high-end hardware.
 
 #### SYSBENCH
@@ -1221,8 +1220,8 @@ The results whill be directly compared with those of VMs and Containers below.
 
 **Observations:**
 - **Very similar results for both environments** in HPCC tests. When conducted on the host machine directly, most metrics improve.
-- **Containers perform slightly better in DGEMM (Matrix Multiplication)**.
-- **RandomAccess and FFT performance remains low in both**, indicating high memory latency. Running directly on the host machine also doesn't improve this metric 
+- **Containers perform way better in DGEMM (Matrix Multiplication)**.
+- **RandomAccess and FFT performance remains low**, indicating high memory latency. Running directly on the host machine also doesn't improve this metric 
 
 ### **Stress-NG Benchmark Comparison (CPU, Memory, Network)**
 
@@ -1248,7 +1247,7 @@ The results whill be directly compared with those of VMs and Containers below.
 **Observations:**
 
 - **VMs perform better in CPU calculations**, likely due to **less overhead** than Docker’s process virtualization.
-- **Containers significantly outperform VMs in Memory Write Speed (2× better).**
+- **Containers significantly outperform both VMs and the host machine in Memory Write Speed (2× better).**
 
 ### ** Network Performance (iperf3)**
 
@@ -1267,30 +1266,30 @@ For the final comparison between VM and Container disk I/O performance, the same
 
 | Operation           | File Size | Record Length | VM Performance | Container Performance | Host Machine Performance |
 |--------------------|----------:|--------------:|--------------:|---------------------:|-------------------------:|
-| **Writer report**       | 32768     | 64            | 27177          | 51560                 | 35669                    |
-| **Writer report**       | 32768     | 1024          | 1180           | 3273                  | 1501                     |
-| **Writer report**       | 32768     | 16384         | 65             | 172                   | 78                       |
-| **Writer report**       | 131072    | 64            | 23221          | 53089                 | 31845                    |
-| **Writer report**       | 131072    | 1024          | 1609           | 3308                  | 1710                     |
-| **Writer report**       | 131072    | 16384         | 57             | 169                   | 98                       |
-| **Reader report**       | 32768     | 64            | 49975          | 111425                | 70632                    |
-| **Reader report**       | 32768     | 1024          | 2953           | 5895                  | 3673                     |
-| **Reader report**       | 32768     | 16384         | 264            | 257                   | 245                      |
-| **Reader report**       | 131072    | 64            | 75938          | 110356                | 92107                    |
-| **Reader report**       | 131072    | 1024          | 4393           | 5516                  | 5147                     |
-| **Reader report**       | 131072    | 16384         | 167            | 255                   | 300                      |
-| **Random read report**  | 32768     | 64            | 57572          | 101263                | 57572                    |
-| **Random read report**  | 32768     | 1024          | 2806           | 5207                  | 2806                     |
-| **Random read report**  | 32768     | 16384         | 228            | 260                   | 228                      |
-| **Random read report**  | 131072    | 64            | 75026          | 103779                | 75026                    |
-| **Random read report**  | 131072    | 1024          | 1891           | 5217                  | 1891                     |
-| **Random read report**  | 131072    | 16384         | 174            | 255                   | 174                      |
-| **Random write report** | 32768     | 64            | 33047          | 85319                 | 33047                    |
-| **Random write report** | 32768     | 1024          | 2350           | 5318                  | 2350                     |
-| **Random write report** | 32768     | 16384         | 142            | 237                   | 142                      |
-| **Random write report** | 131072    | 64            | 31855          | 93141                 | 31855                    |
-| **Random write report** | 131072    | 1024          | 3273           | 5666                  | 3273                     |
-| **Random write report** | 131072    | 16384         | 109            | 240                   | 109                      |
+| **write **       | 32768     | 64            | 27177          | 51560                 | 35669                    |
+| **write **       | 32768     | 1024          | 1180           | 3273                  | 1501                     |
+| **write **       | 32768     | 16384         | 65             | 172                   | 78                       |
+| **write **       | 131072    | 64            | 23221          | 53089                 | 31845                    |
+| **write **       | 131072    | 1024          | 1609           | 3308                  | 1710                     |
+| **write **       | 131072    | 16384         | 57             | 169                   | 98                       |
+| **read **       | 32768     | 64            | 49975          | 111425                | 70632                    |
+| **read **       | 32768     | 1024          | 2953           | 5895                  | 3673                     |
+| **read **       | 32768     | 16384         | 264            | 257                   | 245                      |
+| **read **       | 131072    | 64            | 75938          | 110356                | 92107                    |
+| **read **       | 131072    | 1024          | 4393           | 5516                  | 5147                     |
+| **read **       | 131072    | 16384         | 167            | 255                   | 300                      |
+| **Random read **  | 32768     | 64            | 57572          | 101263                | 57572                    |
+| **Random read **  | 32768     | 1024          | 2806           | 5207                  | 2806                     |
+| **Random read **  | 32768     | 16384         | 228            | 260                   | 228                      |
+| **Random read **  | 131072    | 64            | 75026          | 103779                | 75026                    |
+| **Random read **  | 131072    | 1024          | 1891           | 5217                  | 1891                     |
+| **Random read **  | 131072    | 16384         | 174            | 255                   | 174                      |
+| **Random write ** | 32768     | 64            | 33047          | 85319                 | 33047                    |
+| **Random write ** | 32768     | 1024          | 2350           | 5318                  | 2350                     |
+| **Random write ** | 32768     | 16384         | 142            | 237                   | 142                      |
+| **Random write ** | 131072    | 64            | 31855          | 93141                 | 31855                    |
+| **Random write ** | 131072    | 1024          | 3273           | 5666                  | 3273                     |
+| **Random write ** | 131072    | 16384         | 109            | 240                   | 109                      |
 
 **Observations:**
 - Containers offer a better and much more balanced performance compared to virtual machines across all operations.
@@ -1300,7 +1299,8 @@ For the final comparison between VM and Container disk I/O performance, the same
 
 ## Conclusion
 It can be safely said that containers offer a better and more scalable solution to cloud deployments: they register a far better performance with respect to all metrics. 
-The only reasons that could lead to choosing VMs over containers are security and raw CPU power, otherwise containers are simply a more modern and reliable solution, which outperform VMs in almost every aspect.
-On a very practical note, it was much simpler to work with containers than Virtual Machines; their setup is seamless and, despite the inherent overhead, performing operations with them drained the machine's resources much less than when doing the same with VMs. 
+The only reasons that could lead to choosing VMs over containers are security and raw CPU power.
+Otherwise containers are simply a more modern and reliable solution, which outperform VMs in almost every aspect.
+On a very practical and persona; note, it was much, much simpler to work with containers than Virtual Machines; their setup is seamless and, despite the inherent overhead, performing operations with them drained the machine's resources much less than when doing the same with VMs. 
 
 All of these considerations would probably lead, most of the time, to choosing containers in a real practical environment.
