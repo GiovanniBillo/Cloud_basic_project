@@ -1223,18 +1223,18 @@ The results whill be directly compared with those of VMs and Containers below.
 - **Containers perform way better in DGEMM (Matrix Multiplication)**.
 - **RandomAccess and FFT performance remains low**, indicating high memory latency. Running directly on the host machine also doesn't improve this metric 
 
-### **Stress-NG Benchmark Comparison (CPU, Memory, Network)**
+### **Stress-NG Benchmark Comparison (CPU, Memory)**
 
 | **Metric**                | **Virtual Machines** | **Containers**    | **Host Machine** | **Common Baselines** (Approximate) |
 |--------------------------|--------------------|-----------------|---------------|----------------------------------|
 | **CPU (bogo ops/sec)**    | 1100-1165         | 1335-1338       | 666           | Low: 500 / High: 2000+         |
 | **Memory (bogo ops/sec)** | 49,000-50,000     | 60,959-61,763   | 37,472        | Low: 30,000 / High: 70,000+    |
+| **HDD (bogo ops/sec)**    | ~400,000-460,000   | 1,011,480-1,019,107 | 1,119,998 | 5000-8000 MiB/s  |
 
  **Observations:**
 - **Containers outperform VMs in CPU and Memory tests.**
 - **Both VMs and Containers perform better than the limited host machine.**
 - **Memory bandwidth is significantly better in Containers (60,000 vs. 50,000 bogo ops/sec).**
-- **Network is much faster in Containers (45+ Gbps) vs. VMs (~1.4 Gbps), likely due to virtualized network overhead in VMs.**
 
 ### ** Sysbench (CPU & Memory Performance)**
 
@@ -1242,7 +1242,6 @@ The results whill be directly compared with those of VMs and Containers below.
 |--------------------------|--------------------|----------------|---------------|-------------------|
 | **CPU Events per Second** | 665-698           | 533-535        | 262           | 800-1200         |
 | **Memory Write Speed**    | ~4,100 MiB/s      | ~8,563 MiB/s   | 4,943 MiB/s   | 5000-8000 MiB/s  |
-
 
 **Observations:**
 
